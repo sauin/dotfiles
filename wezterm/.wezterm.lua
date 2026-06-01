@@ -181,9 +181,9 @@ local function string_to_color(str)
     -- saturation/lightness use wide bands too (driven by independent hash bits)
     -- so neighbouring repos differ on all three axes and stay easy to tell
     -- apart, while the high lightness floor keeps every tint soft and light.
-    local hue = (hash & 0x1ff) / 512 * 360                       -- 0..360
-    local saturation = 0.40 + ((hash >> 9) & 0xff) / 255 * 0.50  -- 0.40..0.90
-    local lightness = 0.70 + ((hash >> 17) & 0x3f) / 63 * 0.20   -- 0.70..0.90
+    local hue = (hash & 0x1ff) / 512 * 360                      -- 0..360
+    local saturation = 0.40 + ((hash >> 9) & 0xff) / 255 * 0.50 -- 0.40..0.90
+    local lightness = 0.70 + ((hash >> 17) & 0x3f) / 63 * 0.20  -- 0.70..0.90
     return wezterm.color.from_hsla(hue, saturation, lightness, 1)
 end
 
@@ -295,7 +295,7 @@ wezterm.on('update-status', function(window, pane)
         end
     end
 
-    -- Применяем переопределение конфигурации для текущего окна
+    -- apply reconfig for the current window
     window:set_config_overrides({
         color_scheme = theme,
     })
@@ -314,17 +314,20 @@ config.colors = {
 config.window_background_opacity = .98
 
 config.keys = {
-    -- Ctrl+Shift+V — вставка в терминал (стандартное поведение)
-    -- {
-    --  key = 'V',
-    --  mods = 'CTRL|SHIFT',
-    --  action = wezterm.action.PasteFrom 'Clipboard',
-    --},
-    -- Ctrl+V — пропускаем в приложение (Claude Code получит сигнал сам)
     {
         key = 'v',
         mods = 'SHIFT|CTRL',
         action = wezterm.action.SendKey { key = 'v', mods = 'CTRL' },
+    },
+    {
+        key = 'LeftArrow',
+        mods = 'CTRL|ALT',
+        action = act.MoveTabRelative(-1),
+    },
+    {
+        key = 'RightArrow',
+        mods = 'CTRL|ALT',
+        action = act.MoveTabRelative(1),
     },
     { key = 'v', mods = 'CTRL', action = wezterm.action.PasteFrom 'Clipboard' },
     --{ key = 'v', mods = 'SHIFT|CTRL', action = wezterm.action_callback(function(window, pane)
